@@ -11,7 +11,7 @@ A **production-grade, end-to-end data engineering pipeline** built on Microsoft 
 
 ## 📐 Architecture Overview
 
-![Architecture Diagram](architecture/architecture_diagram.png)
+![Architecture Diagram][(https://learn.microsoft.com/en-us/azure/architecture/databases/architecture/_images/azure-data-factory-baseline.png)]
 
 > **How to read this diagram:** Data flows top-to-bottom — from the on-premises SQL Server source, through ADF ingestion, across the three Medallion layers in ADLS Gen2, through Databricks transformations, into Synapse Analytics for SQL serving, and finally out to any BI consumption tool.
 
