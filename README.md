@@ -13,111 +13,6 @@ A **production-grade, end-to-end data engineering pipeline** built on Microsoft 
 
 ![Architecture Diagram][(https://learn.microsoft.com/en-us/azure/architecture/databases/architecture/_images/azure-data-factory-baseline.png)]
 
-> **How to read this diagram:** Data flows top-to-bottom — from the on-premises SQL Server source, through ADF ingestion, across the three Medallion layers in ADLS Gen2, through Databricks transformations, into Synapse Analytics for SQL serving, and finally out to any BI consumption tool.
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        DATA SOURCE LAYER                                │
-│                                                                         │
-│   ┌──────────────────────────────────────────────────┐                  │
-│   │         On-Premises SQL Server (SSMS)            │                  │
-│   │         Database: Employeedb                     │                  │
-│   │         10 Tables: Customers, Accounts,          │                  │
-│   │         Transactions, Loans, Credit Cards,       │                  │
-│   │         Branches, Employees, Fraud,              │                  │
-│   │         Insurance, Support Tickets               │                  │
-│   └──────────────────┬───────────────────────────────┘                  │
-└──────────────────────┼──────────────────────────────────────────────────┘
-                       │  Self-Hosted Integration Runtime (SHIR)
-                       │  (Bridge between On-Prem & Azure Cloud)
-                       ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                       INGESTION LAYER                                   │
-│                                                                         │
-│   ┌──────────────────────────────────────────────────┐                  │
-│   │         Azure Data Factory (ADF)                 │                  │
-│   │         Pipeline: pipeline1                      │                  │
-│   │         Activity: Copy Data                      │                  │
-│   │         Linked Service: SQL Server → ADLS Gen2   │                  │
-│   │         Secrets managed via Azure Key Vault      │                  │
-│   └──────────────────┬───────────────────────────────┘                  │
-└──────────────────────┼──────────────────────────────────────────────────┘
-                       │  Raw data copied as Parquet/Delta
-                       ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    STORAGE LAYER — ADLS Gen2                            │
-│                    Storage Account: bankingdatalake789                  │
-│                                                                         │
-│   ┌─────────────┐    ┌─────────────┐    ┌─────────────┐                │
-│   │   BRONZE    │    │   SILVER    │    │    GOLD     │                │
-│   │  Container  │    │  Container  │    │  Container  │                │
-│   │             │    │             │    │             │                │
-│   │ Raw data    │    │ Cleaned &   │    │ Aggregated  │                │
-│   │ as-is from  │───▶│ enriched    │───▶│ business    │                │
-│   │ source      │    │ data        │    │ metrics     │                │
-│   │             │    │             │    │             │                │
-│   │ 10 tables   │    │ 10 tables   │    │ 10 views    │                │
-│   └─────────────┘    └─────────────┘    └─────────────┘                │
-└───────────────────────────┬─────────────────────────────────────────────┘
-                            │  PySpark Notebooks
-                            ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                   TRANSFORMATION LAYER                                  │
-│                                                                         │
-│   ┌──────────────────────────────────────────────────┐                  │
-│   │         Azure Databricks                         │                  │
-│   │                                                  │                  │
-│   │  Notebook 1: Bronze Ingestion                    │                  │
-│   │  → Reads from ADF-loaded ADLS Bronze             │                  │
-│   │  → Applies schema, adds audit columns            │                  │
-│   │  → Saves as Delta format                         │                  │
-│   │                                                  │                  │
-│   │  Notebook 2: Silver Transformations              │                  │
-│   │  → Deduplication & null handling                 │                  │
-│   │  → Type casting (STRING → DECIMAL/INT)           │                  │
-│   │  → Feature engineering (age groups,              │                  │
-│   │    income brackets, risk categories)             │                  │
-│   │  → Standardization of categorical columns        │                  │
-│   │                                                  │                  │
-│   │  Notebook 3: Gold Aggregations                   │                  │
-│   │  → Customer 360 view                             │                  │
-│   │  → Branch performance metrics                    │                  │
-│   │  → Loan portfolio analysis                       │                  │
-│   │  → Fraud analysis dashboard                      │                  │
-│   │  → Monthly financial summary                     │                  │
-│   │  → Cross-sell insights                           │                  │
-│   └──────────────────────────────────────────────────┘                  │
-└───────────────────────────┬─────────────────────────────────────────────┘
-                            │  Gold Delta tables
-                            ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                   SERVING LAYER                                         │
-│                                                                         │
-│   ┌──────────────────────────────────────────────────┐                  │
-│   │         Azure Synapse Analytics                  │                  │
-│   │         Workspace: synapse-banking-prod          │                  │
-│   │                                                  │                  │
-│   │  Serverless SQL Pool                             │                  │
-│   │  Database: banking_analytics_db                  │                  │
-│   │                                                  │                  │
-│   │  Views created on Gold layer:                    │                  │
-│   │  → vw_customer_360                               │                  │
-│   │  → vw_branch_performance                         │                  │
-│   │  → vw_fraud_analysis                             │                  │
-│   │  → vw_monthly_financial                          │                  │
-│   └──────────────────────────────────────────────────┘                  │
-└───────────────────────────┬─────────────────────────────────────────────┘
-                            │  SQL Endpoint / JDBC
-                            ▼
-┌─────────────────────────────────────────────────────────────────────────┐
-│                   CONSUMPTION LAYER                                     │
-│                                                                         │
-│         Power BI / Tableau / SQL Clients                                │
-│         (Dashboard development in progress)                             │
-└─────────────────────────────────────────────────────────────────────────┘
-```
-
----
 
 ## 🛠️ Tech Stack
 
@@ -295,12 +190,12 @@ FROM OPENROWSET(
 
 ## 👤 Author
 
-**Mayank**
+**Lavanshi Bansal**
 Data Engineer | Azure | PySpark | Power BI
 📍 Delhi, India
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)](https://linkedin.com/in/your-profile)
-[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat&logo=github)](https://github.com/your-username)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?style=flat&logo=linkedin)]([https://linkedin.com/in/lavanshibansal/)]
+[![GitHub](https://img.shields.io/badge/GitHub-Follow-black?style=flat&logo=github)](https://github.com/lavanshi295/)
 
 ---
 
