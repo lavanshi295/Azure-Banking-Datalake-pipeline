@@ -11,8 +11,9 @@ A **production-grade, end-to-end data engineering pipeline** built on Microsoft 
 
 ## 📐 Architecture Overview
 
-![Architecture Diagram][(https://learn.microsoft.com/en-us/azure/architecture/databases/architecture/_images/azure-data-factory-baseline.png)]
+![Architecture Diagram](Architecture/architecture.png)
 
+---
 
 ## 🛠️ Tech Stack
 
@@ -141,25 +142,6 @@ All Bronze-to-Silver transformations explicitly cast string columns to appropria
 
 ---
 
-## 🚀 How to Reproduce This Project
-
-### Prerequisites
-- Azure subscription (Free tier works for learning)
-- SQL Server Express installed locally (SSMS)
-- Azure resources: ADLS Gen2, ADF, Databricks, Synapse, Key Vault
-
-### Step-by-Step Setup
-1. **Set up SQL Server** — Create database, load the 10 source tables
-2. **Create ADLS Gen2** — Create `bronze`, `silver`, `gold` containers
-3. **Set up Azure Key Vault** — Store SQL Server credentials as secrets
-4. **Configure ADF** — Create linked services, datasets and copy pipeline with SHIR
-5. **Run Bronze notebooks** in Databricks — Ingest data from ADLS bronze
-6. **Run Silver notebooks** — Apply transformations and save to silver container
-7. **Run Gold notebooks** — Build aggregations and save to gold container
-8. **Set up Synapse** — Create serverless SQL database and views on gold layer
-9. **Query views** — Validate data using `SELECT TOP 10 * FROM vw_customer_360`
-
----
 
 ## 📁 Synapse SQL Views
 
